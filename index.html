@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Surprise</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #fff5f7 0%, #fce4ec 100%);
+            font-family: 'Apple Chancery', cursive, serif;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        /* The Interactive Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 50px 30px;
+            box-shadow: 0 8px 32px 0 rgba(255, 182, 193, 0.37);
+            display: none;
+            animation: appear 1.5s ease-out forwards;
+        }
+
+        @keyframes appear {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .main-btn {
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            background: #ff4081;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(255, 64, 129, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .main-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(255, 64, 129, 0.5);
+        }
+
+        h1 { color: #ad1457; font-size: 2.5rem; margin-bottom: 10px; }
+        p { color: #880e4f; font-size: 1.2rem; line-height: 1.6; }
+
+        /* Hidden music trigger */
+        #music-player { display: none; }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <div class="overlay">
+        <button id="startBtn" class="main-btn">Tap to open your surprise Mumma✨💖</button>
+
+        <div id="card" class="glass-card">
+            <h1>Happy Birthday! 🌸</h1>
+            <p>I found you when I wasn’t even searching for love… and somehow, you became everything I didn’t know I needed ❤️
+
+            I will always hold your hand in good days, in bad days, and in those random confusing days too.
+            I’ll be there for you whenever you need me… and even when you say you don’t need me 😂
+
+            Jokes aside…
+            You’ve become such a special part of my life, and I genuinely feel lucky to have you.
+
+            The way you smile, the way you talk, the way you just exist  it makes everything around me feel better ✨
+
+            I don’t promise perfection… but I promise effort, honesty, and always standing by your side.
+
+            No matter where life takes us, one thing is for sure
+            you’ll always have me 💫
+
+            Happy Birthday, Preeti ❤️
+</p>
+            <div style="font-size: 2.5rem; margin-top: 20px;">💐💖🎂✨</div>
+        </div>
+    </div>
+
+    <iframe id="music-player" 
+        src="https://www.youtube.com/embed/JcamjK-uNa4?enablejsapi=1" 
+        allow="autoplay">
+    </iframe>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const startBtn = document.getElementById('startBtn');
+        const card = document.getElementById('card');
+        const music = document.getElementById('music-player');
+
+        let particles = [];
+        const colors = ['#ff80ab', '#ff4081', '#fce4ec', '#f06292', '#ba68c8'];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + 20;
+                this.size = Math.random() * 15 + 5;
+                this.speedY = Math.random() * 1.5 + 0.5;
+                this.speedX = Math.sin(Math.random() * 2) * 0.5;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.type = Math.random() > 0.5 ? 'heart' : 'flower';
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = Math.random() * 2 - 1;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation * Math.PI / 180);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = 0.7;
+
+                if (this.type === 'heart') {
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.bezierCurveTo(-this.size/2, -this.size/2, -this.size, this.size/3, 0, this.size);
+                    ctx.bezierCurveTo(this.size, this.size/3, this.size/2, -this.size/2, 0, 0);
+                    ctx.fill();
+                } else {
+                    // Simple Flower
+                    for(let i=0; i<5; i++) {
+                        ctx.rotate(72 * Math.PI / 180);
+                        ctx.beginPath();
+                        ctx.ellipse(0, -this.size/2, this.size/4, this.size/2, 0, 0, 2 * Math.PI);
+                        ctx.fill();
+                    }
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.size/4, 0, 2 * Math.PI);
+                    ctx.fillStyle = '#fff';
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                this.rotation += this.rotationSpeed;
+                if (this.y < -50) this.reset();
+            }
+        }
+
+        function init() {
+            for (let i = 0; i < 40; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        startBtn.addEventListener('click', () => {
+            startBtn.style.display = 'none';
+            card.style.display = 'block';
+            
+            // Trigger music
+            let musicSrc = music.src;
+            music.src = musicSrc + "&autoplay=1";
+            
+            init();
+            animate();
+        });
+
+    </script>
+</body>
+</html>
